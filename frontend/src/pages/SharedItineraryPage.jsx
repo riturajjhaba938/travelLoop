@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, DollarSign, Sun, Copy, Check, Share2, Globe } from 'lucide-react';
-import useTripStore from '../store/useTripStore';
+import { Calendar, MapPin, DollarSign, Sun, Copy, Check, Share2, Globe, Hotel, Car, Utensils, Activity } from 'lucide-react';
 import Loader from '../components/common/Loader';
 import ErrorMessage from '../components/common/ErrorMessage';
 import { getTripById } from '../api/trips.api';
 import { getSections } from '../api/sections.api';
+
+const TYPE_ICONS = {
+  hotel: <Hotel size={20} color="var(--primary)" />,
+  transport: <Car size={20} color="var(--primary)" />,
+  food: <Utensils size={20} color="var(--primary)" />,
+  activity: <Activity size={20} color="var(--primary)" />
+};
 
 export default function SharedItineraryPage() {
   const { id } = useParams();
@@ -13,7 +19,7 @@ export default function SharedItineraryPage() {
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeDay, setActiveDay] = useState(0);
+  const [activeDayIdx, setActiveDayIdx] = useState(0);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -40,6 +46,32 @@ export default function SharedItineraryPage() {
     fetchSharedTrip();
   }, [id]);
 
+  const groupedDays = useMemo(() => {
+    const sortedSections = [...sections].sort((a, b) => {
+      const orderA = Number.isFinite(Number(a.order_index)) ? Number(a.order_index) : Number.MAX_SAFE_INTEGER;
+      const orderB = Number.isFinite(Number(b.order_index)) ? Number(b.order_index) : Number.MAX_SAFE_INTEGER;
+      if (orderA !== orderB) return orderA - orderB;
+      return new Date(a.date_from) - new Date(b.date_from);
+    });
+
+    const groups = {};
+    sortedSections.forEach(sec => {
+      const dateStr = new Date(sec.date_from).toLocaleDateString();
+      if (!groups[dateStr]) {
+        groups[dateStr] = { date: sec.date_from, sections: [] };
+      }
+      groups[dateStr].sections.push(sec);
+    });
+    const sorted = Object.values(groups).sort((a, b) => new Date(a.date) - new Date(b.date));
+    sorted.forEach(day => day.sections.sort((a, b) => {
+      const orderA = Number.isFinite(Number(a.order_index)) ? Number(a.order_index) : Number.MAX_SAFE_INTEGER;
+      const orderB = Number.isFinite(Number(b.order_index)) ? Number(b.order_index) : Number.MAX_SAFE_INTEGER;
+      if (orderA !== orderB) return orderA - orderB;
+      return new Date(a.date_from) - new Date(b.date_from);
+    }));
+    return sorted;
+  }, [sections]);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -50,7 +82,7 @@ export default function SharedItineraryPage() {
   if (error) return <div style={{ padding: 48, textAlign: 'center' }}><ErrorMessage message={error} /></div>;
   if (!trip) return null;
 
-  const currentDay = sections[activeDay];
+  const currentDay = groupedDays[activeDayIdx];
 
   return (
     <div style={{ background: '#fafafa', minHeight: '100vh', paddingBottom: 48 }}>
@@ -97,7 +129,7 @@ export default function SharedItineraryPage() {
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 700, color: 'var(--text-main)' }}>The Journey</h2>
           </div>
           
-          {sections.length === 0 ? (
+          {groupedDays.length === 0 ? (
             <div style={{ background: '#fff', padding: 48, borderRadius: 'var(--r-xl)', textAlign: 'center', border: '1px solid var(--border)' }}>
               <p style={{ color: 'var(--text-secondary)' }}>This trip has no activities planned yet.</p>
             </div>
@@ -105,20 +137,20 @@ export default function SharedItineraryPage() {
             <>
               {/* Day Tabs */}
               <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, marginBottom: 32, WebkitOverflowScrolling: 'touch' }}>
-                {sections.map((section, idx) => (
+                {groupedDays.map((day, idx) => (
                   <button
-                    key={section.id} onClick={() => setActiveDay(idx)}
+                    key={idx} onClick={() => setActiveDayIdx(idx)}
                     style={{
                       flexShrink: 0, padding: '14px 24px', borderRadius: 'var(--r-lg)',
-                      background: activeDay === idx ? '#fff' : 'transparent',
-                      color: activeDay === idx ? 'var(--primary)' : 'var(--text-secondary)',
-                      border: activeDay === idx ? '1px solid var(--border)' : '1px solid transparent',
-                      boxShadow: activeDay === idx ? 'var(--shadow-sm)' : 'none',
+                      background: activeDayIdx === idx ? '#fff' : 'transparent',
+                      color: activeDayIdx === idx ? 'var(--primary)' : 'var(--text-secondary)',
+                      border: activeDayIdx === idx ? '1px solid var(--border)' : '1px solid transparent',
+                      boxShadow: activeDayIdx === idx ? 'var(--shadow-sm)' : 'none',
                       fontWeight: 600, cursor: 'pointer', textAlign: 'left', minWidth: 150, transition: 'all 0.2s'
                     }}
                   >
-                    <div style={{ fontSize: 13, opacity: activeDay === idx ? 1 : 0.7, marginBottom: 4 }}>Section {idx + 1}</div>
-                    <div style={{ fontSize: 15, color: activeDay === idx ? 'var(--text-main)' : 'inherit' }}>{section.title || (section.date_from ? new Date(section.date_from).toLocaleDateString() : 'Activity')}</div>
+                    <div style={{ fontSize: 13, opacity: activeDayIdx === idx ? 1 : 0.7, marginBottom: 4 }}>Day {idx + 1}</div>
+                    <div style={{ fontSize: 15, color: activeDayIdx === idx ? 'var(--text-main)' : 'inherit' }}>{new Date(day.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
                   </button>
                 ))}
               </div>
@@ -126,25 +158,31 @@ export default function SharedItineraryPage() {
               {/* Day Content */}
               {currentDay && (
                 <div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-main)', marginBottom: 24, paddingLeft: 8 }}>{currentDay.title}</h3>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-main)', marginBottom: 24, paddingLeft: 8 }}>
+                    {new Date(currentDay.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                  </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 24, position: 'relative', paddingLeft: 8 }}>
                     <div style={{ position: 'absolute', left: 32, top: 24, bottom: 24, width: 2, background: 'var(--surface-high)' }} />
                     
-                    <div style={{ display: 'flex', gap: 24, position: 'relative', zIndex: 1 }}>
+                    {currentDay.sections.map((sec) => (
+                      <div key={sec.id} style={{ display: 'flex', gap: 24, position: 'relative', zIndex: 1 }}>
                         <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#fff', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0, boxShadow: 'var(--shadow-sm)' }}>
-                          📍
+                          {TYPE_ICONS[sec.section_type] || <Activity size={20} color="var(--primary)" />}
                         </div>
                         <div style={{ flex: 1, background: '#fff', padding: 24, borderRadius: 'var(--r-xl)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                              {currentDay.date_from ? new Date(currentDay.date_from).toLocaleDateString() : ''}
+                              <span style={{ textTransform: 'uppercase', letterSpacing: 1 }}>{sec.section_type}</span>
+                              <span style={{ color: 'var(--text-muted)' }}>•</span>
+                              <span>{new Date(sec.date_from).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                             </div>
-                            <div style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>{currentDay.budget > 0 ? `$${currentDay.budget}` : 'Free'}</div>
+                            {sec.budget > 0 && <div style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>${sec.budget}</div>}
                           </div>
-                          <h4 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-main)', marginBottom: 8 }}>{currentDay.title}</h4>
-                          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{currentDay.description}</p>
+                          <h4 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-main)', marginBottom: 8 }}>{sec.title}</h4>
+                          {sec.description && <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{sec.description}</p>}
                         </div>
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -178,7 +216,7 @@ export default function SharedItineraryPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Duration</span>
-                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{days.length} Days</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{groupedDays.length} Days</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Travelers</span>
@@ -186,7 +224,7 @@ export default function SharedItineraryPage() {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: 15 }}>Est. Budget</span>
-                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{trip.currency}{trip.budget}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>${trip.budget || 0}</span>
               </div>
             </div>
           </div>

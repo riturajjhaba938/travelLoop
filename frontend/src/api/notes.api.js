@@ -11,11 +11,11 @@ export const createNote = async (tripId, noteData) => {
 };
 
 export const updateNote = async (noteId, noteData) => {
-  const { data } = await api.put(`/notes/${noteId}`, noteData);
+  const { data } = await api.put(`/notes/item/${noteId}`, noteData);
   return data;
 };
 
 export const deleteNote = async (noteId) => {
-  const { data } = await api.delete(`/notes/${noteId}`);
+  const { data } = await api.delete(`/notes/item/${noteId}`);
   return data;
 };

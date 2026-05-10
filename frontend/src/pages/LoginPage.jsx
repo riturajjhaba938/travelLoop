@@ -84,7 +84,7 @@ export default function LoginPage() {
             fontFamily: 'var(--font-sans)',
           }}>
             <strong style={{ color: 'var(--primary)' }}>Test credentials:</strong><br />
-            elena@example.com / password123
+            demo@traveloop.com / demo123
           </div>
 
           <ErrorMessage message={apiError} />
@@ -96,7 +96,7 @@ export default function LoginPage() {
               <div style={{ position: 'relative' }}>
                 <Mail size={17} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
-                  type="email" name="email" placeholder="elena@example.com"
+                  type="email" name="email" placeholder="demo@traveloop.com"
                   onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.email}
                   style={inputStyle(formik.touched.email && formik.errors.email)}
                   onFocus={e => e.target.style.borderColor = 'var(--primary)'}

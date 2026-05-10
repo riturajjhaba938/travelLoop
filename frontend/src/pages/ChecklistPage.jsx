@@ -12,17 +12,20 @@ export default function ChecklistPage() {
 
   useEffect(() => {
     getChecklist(tripId).then(res => { setItems(res); setLoading(false); });
-  }, []);
+  }, [tripId]);
 
   const handleToggle = async (id) => {
-    setItems(items.map(i => i.id === id ? { ...i, checked: !i.checked } : i));
-    await toggleChecklistItem(tripId, id);
+    const itemToToggle = items.find(i => i.id === id);
+    if (!itemToToggle) return;
+    
+    setItems(items.map(i => i.id === id ? { ...i, is_checked: !i.is_checked } : i));
+    await toggleChecklistItem(id, !itemToToggle.is_checked);
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!newItem.trim()) return;
-    const item = await addChecklistItem(tripId, { text: newItem, category: 'General' });
+    const item = await addChecklistItem(tripId, { item_name: newItem, category: 'General' });
     setItems([...items, item]);
     setNewItem('');
   };
@@ -30,6 +33,7 @@ export default function ChecklistPage() {
   if (loading) return <Loader />;
 
   const categories = [...new Set(items.map(i => i.category))];
+  const completionPercent = items.length ? (items.filter(i => i.is_checked).length / items.length) * 100 : 0;
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '48px 24px' }}>
@@ -41,10 +45,10 @@ export default function ChecklistPage() {
           Packing & Prep Checklist
         </h1>
         <div style={{ width: '100%', height: 8, background: 'var(--surface)', borderRadius: 4, overflow: 'hidden', marginTop: 24 }}>
-          <div style={{ height: '100%', width: `${(items.filter(i => i.checked).length / items.length) * 100}%`, background: 'var(--primary)', transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${completionPercent}%`, background: 'var(--primary)', transition: 'width 0.3s' }} />
         </div>
         <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 8 }}>
-          {items.filter(i => i.checked).length} of {items.length} completed
+          {items.filter(i => i.is_checked).length} of {items.length} completed
         </div>
       </header>
 
@@ -64,12 +68,12 @@ export default function ChecklistPage() {
             <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-main)', marginBottom: 16, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>{cat}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {items.filter(i => i.category === cat).map(item => (
-                <label key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', padding: '8px 0' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${item.checked ? 'var(--primary)' : 'var(--border)'}`, background: item.checked ? 'var(--primary)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                    {item.checked && <Check size={14} color="#fff" />}
+                <label key={item.id} onClick={() => handleToggle(item.id)} style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', padding: '8px 0' }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${item.is_checked ? 'var(--primary)' : 'var(--border)'}`, background: item.is_checked ? 'var(--primary)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                    {item.is_checked && <Check size={14} color="#fff" />}
                   </div>
-                  <span style={{ fontSize: 15, color: item.checked ? 'var(--text-muted)' : 'var(--text-main)', textDecoration: item.checked ? 'line-through' : 'none', transition: 'all 0.2s' }}>
-                    {item.text}
+                  <span style={{ fontSize: 15, color: item.is_checked ? 'var(--text-muted)' : 'var(--text-main)', textDecoration: item.is_checked ? 'line-through' : 'none', transition: 'all 0.2s' }}>
+                    {item.item_name}
                   </span>
                 </label>
               ))}

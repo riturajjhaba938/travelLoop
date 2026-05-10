@@ -9,7 +9,7 @@ export default function NotesPage() {
   const [loading, setLoading] = useState(true);
   const { id: tripId } = useParams();
   const [isAdding, setIsAdding] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
+  const [newDayNumber, setNewDayNumber] = useState('1');
   const [newContent, setNewContent] = useState('');
 
   useEffect(() => {
@@ -17,14 +17,14 @@ export default function NotesPage() {
   }, []);
 
   const handleSave = async () => {
-    if (!newTitle.trim() || !newContent.trim()) return;
-    const note = await createNote(tripId, { title: newTitle, content: newContent });
+    if (!newContent.trim()) return;
+    const note = await createNote(tripId, { day_number: Number(newDayNumber) || 1, content: newContent });
     setNotes([note, ...notes]);
-    setIsAdding(false); setNewTitle(''); setNewContent('');
+    setIsAdding(false); setNewDayNumber('1'); setNewContent('');
   };
 
   const handleDelete = async (id) => {
-    await deleteNote(tripId, id);
+    await deleteNote(id);
     setNotes(notes.filter(n => n.id !== id));
   };
 
@@ -45,10 +45,12 @@ export default function NotesPage() {
           <Plus size={18} /> New Note
         </button>
       </header>
-
       {isAdding && (
         <div style={{ background: '#fff', borderRadius: 'var(--r-lg)', border: '1px solid var(--border)', padding: 24, marginBottom: 32, boxShadow: 'var(--shadow-md)' }}>
-          <input type="text" placeholder="Note Title" value={newTitle} onChange={e => setNewTitle(e.target.value)} style={{ width: '100%', border: 'none', borderBottom: '1px solid var(--border)', fontSize: 20, fontWeight: 600, paddingBottom: 12, marginBottom: 16, outline: 'none' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-main)' }}>Day</span>
+            <input type="number" min="1" value={newDayNumber} onChange={e => setNewDayNumber(e.target.value)} style={{ width: 60, padding: '6px 12px', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', fontSize: 15, outline: 'none' }} />
+          </div>
           <textarea placeholder="Write your notes here..." value={newContent} onChange={e => setNewContent(e.target.value)} style={{ width: '100%', border: 'none', fontSize: 15, lineHeight: 1.6, minHeight: 150, outline: 'none', resize: 'vertical', marginBottom: 16 }} />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
             <button onClick={() => setIsAdding(false)} style={{ padding: '8px 16px', border: 'none', background: 'transparent', color: 'var(--text-secondary)', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
@@ -61,14 +63,14 @@ export default function NotesPage() {
         {notes.map(note => (
           <div key={note.id} style={{ background: '#fff', borderRadius: 'var(--r-lg)', border: '1px solid var(--border)', padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-main)' }}>{note.title}</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-main)' }}>Day {note.day_number}</h3>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 4 }}><Edit3 size={16} /></button>
                 <button onClick={() => handleDelete(note.id)} style={{ background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer', padding: 4 }}><Trash2 size={16} /></button>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)', fontSize: 12, marginBottom: 16 }}>
-              <Calendar size={12} /> {new Date(note.updatedAt).toLocaleDateString()} at {new Date(note.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              <Calendar size={12} /> {new Date(note.updated_at || note.updatedAt || note.created_at || note.createdAt).toLocaleDateString()} at {new Date(note.updated_at || note.updatedAt || note.created_at || note.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
             </div>
             <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
               {note.content}
