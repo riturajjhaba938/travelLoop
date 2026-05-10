@@ -5,24 +5,37 @@ import { Search, Star, MapPin } from 'lucide-react';
 import useTripStore from '../store/useTripStore';
 import Loader from '../components/common/Loader';
 import TripCard from '../components/trips/TripCard';
-import { getActivities } from '../api/cities.api';
-import { MOCK_DESTINATIONS, MOCK_FEATURED_TRIPS } from '../mock/data';
+import { getFeaturedCities } from '../api/cities.api';
+import { getFeaturedTrips } from '../api/trips.api';
 import { getPhotoUrl, handleImgError } from '../utils/images';
 
 const HERO_IMG = getPhotoUrl('hero_mountain_lake', 1600);
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { trips, fetchTrips, loading } = useTripStore();
-  const [activities, setActivities] = useState([]);
+  const { trips, fetchTrips, loading: storeLoading } = useTripStore();
+  
+  const [destinations, setDestinations] = useState([]);
+  const [featuredTrips, setFeaturedTrips] = useState([]);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     fetchTrips();
-    getActivities().then(setActivities);
+    Promise.all([
+      getFeaturedCities(),
+      getFeaturedTrips()
+    ]).then(([citiesData, tripsData]) => {
+      setDestinations(citiesData.slice(0, 4)); // Only show top 4
+      setFeaturedTrips(tripsData);
+      setPageLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setPageLoading(false);
+    });
   }, [fetchTrips]);
 
-  if (loading) return <Loader />;
+  if (storeLoading || pageLoading) return <Loader />;
 
   const upcomingTrips = trips.filter(t => new Date(t.startDate) >= new Date()).slice(0, 3);
 
@@ -112,22 +125,24 @@ export default function DashboardPage() {
             Popular Destinations
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-            {MOCK_DESTINATIONS.map((dest) => (
+            {destinations.map((dest, i) => {
+              const isLarge = i === 0 || i === 3; // Make first and last large for visual interest
+              return (
               <motion.div
                 key={dest.id}
                 whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
                 transition={{ duration: 0.22 }}
                 style={{
                   position: 'relative', borderRadius: 'var(--r-3xl)', overflow: 'hidden',
-                  height: dest.large ? 360 : 220,
-                  gridColumn: dest.large ? 'span 2' : 'span 1',
-                  gridRow: dest.large ? 'span 2' : 'span 1',
+                  height: isLarge ? 360 : 220,
+                  gridColumn: isLarge ? 'span 2' : 'span 1',
+                  gridRow: isLarge ? 'span 2' : 'span 1',
                   cursor: 'pointer',
                 }}
                 onClick={() => navigate(`/search?q=${dest.name}`)}
               >
                 <img
-                  src={dest.image}
+                  src={dest.image_url}
                   alt={dest.name}
                   onError={handleImgError}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
@@ -136,13 +151,13 @@ export default function DashboardPage() {
                 <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <MapPin size={12} style={{ color: 'var(--primary)' }} />
-                    {dest.trending && <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1 }}>Trending</span>}
+                    {dest.popularity >= 4 && <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1 }}>Trending</span>}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: dest.large ? 26 : 19, fontWeight: 400, marginBottom: 2 }}>{dest.name}</h3>
-                  {dest.tagline && <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, opacity: 0.85 }}>{dest.tagline}</p>}
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: isLarge ? 26 : 19, fontWeight: 400, marginBottom: 2 }}>{dest.name}</h3>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, opacity: 0.85 }}>{dest.country}</p>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </div>
         </section>
 
@@ -152,7 +167,7 @@ export default function DashboardPage() {
             Featured Experiences
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
-            {MOCK_FEATURED_TRIPS.map((exp, i) => (
+            {featuredTrips.map((exp, i) => (
               <motion.div
                 key={exp.id}
                 initial={{ opacity: 0, y: 24 }}
@@ -160,21 +175,21 @@ export default function DashboardPage() {
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
                 style={{ background: '#fff', borderRadius: 'var(--r-3xl)', overflow: 'hidden', border: '1px solid var(--border)', cursor: 'pointer' }}
+                onClick={() => navigate(`/itinerary/${exp.id}`)}
               >
                 <div style={{ position: 'relative', height: 190 }}>
                   <img
-                    src={exp.image} alt={exp.name}
+                    src={exp.cover_photo || getPhotoUrl(exp.place)} alt={exp.name}
                     onError={handleImgError}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   <div style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 'var(--r-full)', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-sans)' }}>
-                    <Star size={12} fill="var(--warning)" color="var(--warning)" /> {exp.rating}
+                    <Star size={12} fill="var(--warning)" color="var(--warning)" /> 4.9
                   </div>
                 </div>
                 <div style={{ padding: 20 }}>
                   <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 19, fontWeight: 400, color: 'var(--text-main)', marginBottom: 8 }}>{exp.name}</h3>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: 16 }}>{exp.description}</p>
-                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 700, color: 'var(--primary)' }}>From ${exp.price}</div>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: 16 }}>Explore the beautiful {exp.place}</p>
                 </div>
               </motion.div>
             ))}

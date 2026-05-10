@@ -1,12 +1,31 @@
-import { MOCK_TRIPS, delay } from '../mock/data';
-let _trips = [...MOCK_TRIPS];
+import api from './axios';
 
-export const getTrips = async () => { await delay(); return [..._trips]; };
-export const getTripById = async (id) => { await delay(300); return _trips.find(t => t.id === id) ?? null; };
-export const createTrip = async (data) => {
-  await delay(800);
-  const t = { id: 'trip-' + Date.now(), status: 'planning', travelers: 1, days: [], budget_breakdown: { dining:0,activities:0,total:0,limit:0 }, weather: null, coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', ...data };
-  _trips = [t, ..._trips]; return t;
+export const getTrips = async () => {
+  const { data } = await api.get('/trips');
+  return data;
 };
-export const updateTrip = async (id, data) => { await delay(); _trips = _trips.map(t => t.id===id?{...t,...data}:t); return _trips.find(t=>t.id===id); };
-export const deleteTrip = async (id) => { await delay(); _trips = _trips.filter(t=>t.id!==id); };
+
+export const getTripById = async (id) => {
+  const { data } = await api.get(`/trips/${id}`);
+  return data;
+};
+
+export const createTrip = async (tripData) => {
+  const { data } = await api.post('/trips', tripData);
+  return data;
+};
+
+export const updateTrip = async (id, tripData) => {
+  const { data } = await api.put(`/trips/${id}`, tripData);
+  return data;
+};
+
+export const deleteTrip = async (id) => {
+  const { data } = await api.delete(`/trips/${id}`);
+  return data;
+};
+
+export const getFeaturedTrips = async () => {
+  const { data } = await api.get('/trips/community');
+  return data;
+};

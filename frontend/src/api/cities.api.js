@@ -1,3 +1,16 @@
-import { MOCK_CITIES, MOCK_SEARCH_RESULTS, delay } from '../mock/data';
-export const searchCities = async (q) => { await delay(250); return MOCK_CITIES.filter(c=>c.toLowerCase().includes(q.toLowerCase())); };
-export const getActivities = async () => { await delay(); return MOCK_SEARCH_RESULTS; };
+import api from './axios';
+
+export const searchCities = async (q = '') => {
+  const { data } = await api.get(`/cities?q=${q}`);
+  return data;
+};
+
+export const getFeaturedCities = async () => {
+  const { data } = await api.get('/cities?featured=true');
+  return data;
+};
+
+export const getActivities = async () => {
+  const { data } = await api.get('/cities/activities');
+  return data;
+};

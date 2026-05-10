@@ -1,5 +1,21 @@
-import { MOCK_TRIPS, delay } from '../mock/data';
-export const getSections = async (tripId) => { await delay(); return MOCK_TRIPS.find(t=>t.id===tripId)?.days ?? []; };
-export const createSection = async (tripId, data) => { await delay(); return { id:'day-'+Date.now(), activities:[], ...data }; };
-export const updateSection = async (tripId, sectionId, data) => { await delay(); return { id:sectionId, ...data }; };
-export const deleteSection = async () => { await delay(); return { success:true }; };
+import api from './axios';
+
+export const getSections = async (tripId) => {
+  const { data } = await api.get(`/sections/trip/${tripId}`);
+  return data;
+};
+
+export const createSection = async (tripId, sectionData) => {
+  const { data } = await api.post(`/sections/trip/${tripId}`, sectionData);
+  return data;
+};
+
+export const updateSection = async (sectionId, sectionData) => {
+  const { data } = await api.put(`/sections/${sectionId}`, sectionData);
+  return data;
+};
+
+export const deleteSection = async (sectionId) => {
+  const { data } = await api.delete(`/sections/${sectionId}`);
+  return data;
+};
