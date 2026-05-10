@@ -1,8 +1,12 @@
 const db = require('../config/db');
+const { checkTripOwnership, checkEntityOwnership } = require('../utils/checkOwnership');
 
 exports.getExpenses = async (req, res, next) => {
   const { tripId } = req.params;
   try {
+    if (!(await checkTripOwnership(tripId, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
     const result = await db.query('SELECT * FROM expenses WHERE trip_id = $1 ORDER BY created_at DESC', [tripId]);
     res.json(result.rows);
   } catch (err) {
@@ -13,9 +17,17 @@ exports.getExpenses = async (req, res, next) => {
 exports.addExpense = async (req, res, next) => {
   const { tripId } = req.params;
   const { section_id, category, description, qty, unit, unit_cost } = req.body;
+  
+  if (isNaN(qty) || isNaN(unit_cost)) {
+    return res.status(400).json({ message: 'Quantity and unit cost must be numbers' });
+  }
+  
   const amount = qty * unit_cost;
 
   try {
+    if (!(await checkTripOwnership(tripId, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
     const result = await db.query(
       'INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
       [tripId, section_id, category, description, qty, unit, unit_cost, amount]
@@ -26,9 +38,25 @@ exports.addExpense = async (req, res, next) => {
   }
 };
 
+exports.deleteExpense = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    if (!(await checkEntityOwnership('expenses', id, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    await db.query('DELETE FROM expenses WHERE id = $1', [id]);
+    res.json({ message: 'Expense deleted' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getBudgetSummary = async (req, res, next) => {
   const { tripId } = req.params;
   try {
+    if (!(await checkTripOwnership(tripId, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
     const plannedResult = await db.query(
       'SELECT SUM(budget) as total_planned FROM trip_sections WHERE trip_id = $1',
       [tripId]
@@ -40,9 +68,9 @@ exports.getBudgetSummary = async (req, res, next) => {
     
     res.json({
       trip_id: tripId,
-      total_planned: plannedResult.rows[0].total_planned || 0,
-      total_spent: spentResult.rows[0].total_spent || 0,
-      remaining: (plannedResult.rows[0].total_planned || 0) - (spentResult.rows[0].total_spent || 0)
+      total_planned: parseFloat(plannedResult.rows[0].total_planned || 0),
+      total_spent: parseFloat(spentResult.rows[0].total_spent || 0),
+      remaining: parseFloat(plannedResult.rows[0].total_planned || 0) - parseFloat(spentResult.rows[0].total_spent || 0)
     });
   } catch (err) {
     next(err);
@@ -52,6 +80,9 @@ exports.getBudgetSummary = async (req, res, next) => {
 exports.getBudgetBreakdown = async (req, res, next) => {
   const { tripId } = req.params;
   try {
+    if (!(await checkTripOwnership(tripId, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
     const categoryBreakdown = await db.query(
       'SELECT category, SUM(amount) as total FROM expenses WHERE trip_id = $1 GROUP BY category',
       [tripId]
@@ -73,6 +104,9 @@ exports.getBudgetBreakdown = async (req, res, next) => {
 exports.getInvoice = async (req, res, next) => {
   const { tripId } = req.params;
   try {
+    if (!(await checkTripOwnership(tripId, req.user.id))) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
     const tripResult = await db.query(
       'SELECT t.*, u.first_name, u.last_name, u.email FROM trips t JOIN users u ON t.user_id = u.id WHERE t.id = $1',
       [tripId]
@@ -98,9 +132,9 @@ exports.getInvoice = async (req, res, next) => {
       trip: tripResult.rows[0],
       expenses: expensesResult.rows,
       totals: {
-        planned: summary.total_budget || 0,
-        spent: summary.total_spent || 0,
-        balance: (summary.total_budget || 0) - (summary.total_spent || 0)
+        planned: parseFloat(summary.total_budget || 0),
+        spent: parseFloat(summary.total_spent || 0),
+        balance: parseFloat(summary.total_budget || 0) - parseFloat(summary.total_spent || 0)
       }
     });
   } catch (err) {

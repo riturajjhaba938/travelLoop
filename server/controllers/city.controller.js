@@ -3,14 +3,16 @@ const db = require('../config/db');
 exports.getAllCities = async (req, res, next) => {
   const { q, featured } = req.query;
   try {
-    let query = 'SELECT * FROM cities';
+    let query = 'SELECT * FROM cities WHERE 1=1';
     const params = [];
 
     if (q) {
-      query += ' WHERE name ILIKE $1 OR country ILIKE $1';
       params.push(`%${q}%`);
-    } else if (featured === 'true') {
-      query += ' WHERE popularity >= 4';
+      query += ` AND (name ILIKE $${params.length} OR country ILIKE $${params.length})`;
+    }
+
+    if (featured === 'true') {
+      query += ' AND popularity >= 4';
     }
 
     query += ' ORDER BY popularity DESC';

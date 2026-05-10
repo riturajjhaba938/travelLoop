@@ -5,10 +5,12 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 router.use(authMiddleware);
 
-router.get('/:tripId/expenses', expenseController.getExpenses);
-router.post('/:tripId/expenses', expenseController.addExpense);
-router.get('/:tripId/budget-summary', expenseController.getBudgetSummary);
-router.get('/:tripId/budget-breakdown', expenseController.getBudgetBreakdown);
+// Base: /api/expenses
+router.get('/:tripId', expenseController.getExpenses);
+router.post('/:tripId', expenseController.addExpense);
+router.get('/:tripId/summary', expenseController.getBudgetSummary);
+router.get('/:tripId/breakdown', expenseController.getBudgetBreakdown);
 router.get('/:tripId/invoice', expenseController.getInvoice);
+router.delete('/:id', expenseController.deleteExpense);
 
 module.exports = router;

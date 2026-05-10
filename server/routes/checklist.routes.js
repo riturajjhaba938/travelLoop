@@ -5,9 +5,10 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 router.use(authMiddleware);
 
-router.get('/:tripId/checklist', checklistController.getChecklist);
-router.post('/:tripId/checklist', checklistController.addItem);
-router.put('/checklist/:id', checklistController.updateItem);
-router.delete('/checklist/:id', checklistController.deleteItem);
+// Base: /api/checklist
+router.get('/:tripId', checklistController.getChecklist);
+router.post('/:tripId', checklistController.addItem);
+router.put('/item/:id', checklistController.updateItem);
+router.delete('/item/:id', checklistController.deleteItem);
 
 module.exports = router;

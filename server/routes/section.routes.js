@@ -5,9 +5,10 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 router.use(authMiddleware);
 
-router.get('/:tripId/sections', sectionController.getSections);
-router.post('/:tripId/sections', sectionController.addSection);
-router.put('/sections/:id', sectionController.updateSection);
-router.delete('/sections/:id', sectionController.deleteSection);
+// Base: /api/sections
+router.get('/trip/:tripId', sectionController.getSections);
+router.post('/trip/:tripId', sectionController.addSection);
+router.put('/:id', sectionController.updateSection);
+router.delete('/:id', sectionController.deleteSection);
 
 module.exports = router;

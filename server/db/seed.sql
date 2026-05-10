@@ -66,9 +66,11 @@ INSERT INTO activities (city_id, name, type, cost, duration_hours, description) 
 (10, 'Tegalalang Rice Terrace', 'sightseeing', 2.00, 1.5, 'Famous terraced rice paddies in Ubud.'),
 (10, 'Surfing at Kuta Beach', 'adventure', 25.00, 2, 'Beginner-friendly surf lessons in Bali''s iconic beach.');
 
--- Seed User
-INSERT INTO users (id, first_name, last_name, email, password_hash) VALUES
-(1, 'Demo', 'User', 'demo@traveloop.com', '$2a$10$7vC/Y/lO.D/qJ/v/w/k.O.a/m.l/m/l/m/l/m/l/m/l/m/l/m/l/m/l/m/l/m'); -- password: demo123
+-- Seed Users
+-- password is 'demo123'
+INSERT INTO users (id, first_name, last_name, email, password_hash, is_admin) VALUES
+(1, 'Demo', 'User', 'demo@traveloop.com', '$2a$10$wrg9uFK7PIE6cqsH/rQ.WefEKccbE5P2WEGkJZZy.oLJSUxUN4FqG', false),
+(2, 'Admin', 'Traveloop', 'admin@traveloop.com', '$2a$10$wrg9uFK7PIE6cqsH/rQ.WefEKccbE5P2WEGkJZZy.oLJSUxUN4FqG', true);
 
 -- Seed Trips for User 1
 -- Trip 1: Europe 2025 (Upcoming)
