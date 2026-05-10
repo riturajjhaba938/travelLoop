@@ -17,7 +17,7 @@ export default function MyTripsPage() {
 
   const filteredTrips = trips.filter(t => {
     if (filter === 'all') return true;
-    const isPast = new Date(t.endDate) < new Date();
+    const isPast = new Date(t.end_date || t.endDate) < new Date();
     return filter === 'past' ? isPast : !isPast;
   });
 

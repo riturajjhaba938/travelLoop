@@ -9,8 +9,8 @@ export default function ProfilePage() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    firstName: user?.first_name || user?.firstName || '',
+    lastName: user?.last_name || user?.lastName || '',
     location: user?.location || '',
     bio: user?.bio || '',
     language: 'English',
@@ -119,11 +119,11 @@ export default function ProfilePage() {
 
           <div style={{ display: 'flex', gap: 40, paddingBottom: 32, borderBottom: '1px solid var(--border)', marginBottom: 32 }}>
             <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>{user.tripsTaken}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>{user.tripsTaken || 0}</div>
               <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}><Plane size={14} /> Trips Taken</div>
             </div>
             <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>{user.countriesVisited}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-main)', marginBottom: 4 }}>{user.countriesVisited || 0}</div>
               <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}><Globe size={14} /> Countries</div>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function ProfilePage() {
           <div>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-main)', marginBottom: 16 }}>Travel Style</h3>
             <div style={{ display: 'flex', gap: 12 }}>
-              {user.travelStyle.map(style => (
+              {(user.travelStyle || ['Adventure', 'Culture']).map(style => (
                 <div key={style} style={{ padding: '6px 16px', background: 'var(--surface-high)', borderRadius: 'var(--r-full)', fontSize: 13, fontWeight: 600, color: 'var(--text-main)' }}>
                   {style}
                 </div>

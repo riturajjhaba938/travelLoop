@@ -29,8 +29,8 @@ export default function SearchPage() {
       setResults(
         query
           ? res.filter(item =>
-              item.name.toLowerCase().includes(query.toLowerCase()) ||
-              item.city.toLowerCase().includes(query.toLowerCase())
+              (item.name || '').toLowerCase().includes(query.toLowerCase()) ||
+              (item.city || item.place || '').toLowerCase().includes(query.toLowerCase())
             )
           : res
       );

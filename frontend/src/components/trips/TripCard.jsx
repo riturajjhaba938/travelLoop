@@ -1,9 +1,14 @@
-import { Link } from 'react-router-dom';
-import { MapPin, Calendar, Users, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, Calendar, Users, ArrowRight, Edit3, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getDestinationImage, handleImgError } from '../../utils/images';
+import useTripStore from '../../store/useTripStore';
+import toast from 'react-hot-toast';
 
 export default function TripCard({ trip }) {
+  const navigate = useNavigate();
+  const { deleteTrip } = useTripStore();
+  
   const destination = trip.destination || trip.place || '';
   const imgSrc = trip.coverImage || trip.cover_photo || getDestinationImage(destination || trip.name, 600);
   const startDate = trip.startDate || trip.start_date;
@@ -18,6 +23,23 @@ export default function TripCard({ trip }) {
   };
   const sc = statusColors[trip.status] || statusColors.upcoming;
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    if (window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+      try {
+        await deleteTrip(trip.id);
+        toast.success('Trip deleted');
+      } catch (err) {
+        toast.error('Failed to delete trip');
+      }
+    }
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    navigate(`/trips/${trip.id}/build`);
+  };
+
   return (
     <motion.div
       whileHover={{ y: -6, boxShadow: '0 16px 40px rgba(0,0,0,0.10)' }}
@@ -29,8 +51,27 @@ export default function TripCard({ trip }) {
         border: '1px solid var(--border)',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative'
       }}
     >
+      {/* Action Buttons */}
+      <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 10, display: 'flex', gap: 8 }}>
+        <button
+          onClick={handleEdit}
+          style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(4px)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-main)', boxShadow: 'var(--shadow-sm)' }}
+          title="Edit Itinerary"
+        >
+          <Edit3 size={16} />
+        </button>
+        <button
+          onClick={handleDelete}
+          style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(4px)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--error)', boxShadow: 'var(--shadow-sm)' }}
+          title="Delete Trip"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
       {/* Image */}
       <div style={{ position: 'relative', height: 210 }}>
         <img

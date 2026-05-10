@@ -10,12 +10,12 @@ export const addChecklistItem = async (tripId, itemData) => {
   return data;
 };
 
-export const toggleChecklistItem = async (itemId) => {
-  const { data } = await api.put(`/checklist/${itemId}/toggle`);
+export const toggleChecklistItem = async (itemId, isChecked) => {
+  const { data } = await api.put(`/checklist/item/${itemId}`, { is_checked: isChecked });
   return data;
 };
 
 export const deleteChecklistItem = async (itemId) => {
-  const { data } = await api.delete(`/checklist/${itemId}`);
+  const { data } = await api.delete(`/checklist/item/${itemId}`);
   return data;
 };
