@@ -20,6 +20,19 @@ export default function DashboardPage() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
+  // Map destination names to slugs:
+  const DESTINATION_SLUGS = {
+    'Seoul': 'seoul',
+    'Amsterdam': 'amsterdam',
+    'New York': 'new-york',
+  };
+
+  const EXPERIENCE_SLUGS = {
+    'Ladakh Himalayan Adventure': 'ladakh',
+    'Cultural Rajasthan': 'rajasthan',
+    'Summer Europe Extravaganza': 'summer-europe',
+  };
+
   useEffect(() => {
     fetchTrips();
     Promise.all([
@@ -139,7 +152,7 @@ export default function DashboardPage() {
                   gridRow: isLarge ? 'span 2' : 'span 1',
                   cursor: 'pointer',
                 }}
-                onClick={() => navigate(`/search?q=${dest.name}`)}
+                onClick={() => navigate(`/location/${DESTINATION_SLUGS[dest.name] || dest.name.toLowerCase().replace(/\s+/g, '-')}`)}
               >
                 <img
                   src={dest.image_url}
@@ -175,7 +188,7 @@ export default function DashboardPage() {
                 transition={{ delay: i * 0.08, duration: 0.45 }}
                 whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
                 style={{ background: 'var(--surface)', borderRadius: 'var(--r-3xl)', overflow: 'hidden', border: '1px solid var(--border)', cursor: 'pointer' }}
-                onClick={() => navigate(`/itinerary/${exp.id}`)}
+                onClick={() => navigate(`/location/${EXPERIENCE_SLUGS[exp.name] || exp.name.toLowerCase().replace(/\s+/g, '-')}`)}
               >
                 <div style={{ position: 'relative', height: 190 }}>
                   <img

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { LOCATIONS } from '../mock/locationData';
 
 export default function LandingPage() {
     const navigate = useNavigate();
@@ -150,52 +151,29 @@ export default function LandingPage() {
                         </button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {/* Destination 1 */}
-                        <div onClick={handleActionClick} className="group bg-surface-container-lowest rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 overflow-hidden cursor-pointer flex flex-col">
-                            <div className="relative aspect-[4/3] overflow-hidden">
-                                <img alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzGGdYz53KioHmYfUU4_Mb3H4liNcX8_Lwsw84xIXFQJQpY-PxowxsyhuVoVKoRknHtkLvenb3jqvkWyRVzv8EfuzkSgI22AlrzP1mi_0_gu-7z-uE1iKK2qHXfHZ0o-xhcGcZXrox4nNpflwmE_Uz3fbhpJ8i77mUfbcR__gxtITRp28-s4Pg6eJKTUGzaxLRq1zU3Pp7dUdxIOjMEysWr82SCDy17L2C4LCneuLObTN3TSooxSqPr9g6l_acS9thAvXd_fG7gQ" />
-                                <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors">
-                                    <span className="material-symbols-outlined text-brand-text text-sm icon-fill">favorite</span>
-                                </button>
-                            </div>
-                            <div className="p-4 flex flex-col flex-grow">
-                                <div className="flex justify-between items-start mb-1">
-                                    <h4 className="font-headline-md text-lg text-brand-text line-clamp-1">Amalfi Coast, Italy</h4>
-                                    <div className="flex items-center gap-1 text-sm">
-                                        <span className="material-symbols-outlined text-brand-primary text-xs icon-fill">star</span>
-                                        <span className="font-bold text-brand-text">4.9</span>
+                        {LOCATIONS.filter(l => l.category === 'Popular Destination').slice(0, 4).map(loc => (
+                            <div key={loc.id} onClick={() => navigate(`/location/${loc.slug}`)} className="group bg-surface-container-lowest rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 overflow-hidden cursor-pointer flex flex-col" style={{ background: 'var(--surface)' }}>
+                                <div className="relative aspect-[4/3] overflow-hidden">
+                                    <img alt={loc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={loc.coverImage} />
+                                    <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors" onClick={(e) => { e.stopPropagation(); navigate('/login'); }}>
+                                        <span className="material-symbols-outlined text-brand-text text-sm">favorite</span>
+                                    </button>
+                                </div>
+                                <div className="p-4 flex flex-col flex-grow">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h4 className="font-headline-md text-lg line-clamp-1" style={{ color: 'var(--text-main)' }}>{loc.name}, {loc.country}</h4>
+                                        <div className="flex items-center gap-1 text-sm">
+                                            <span className="material-symbols-outlined text-brand-primary text-xs icon-fill">star</span>
+                                            <span className="font-bold" style={{ color: 'var(--text-main)' }}>{loc.rating}</span>
+                                        </div>
+                                    </div>
+                                    <p className="font-body-sm text-body-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{loc.tagline}</p>
+                                    <div className="mt-auto">
+                                        <span className="font-bold text-lg" style={{ color: 'var(--text-main)' }}>{loc.priceLevel}</span>
                                     </div>
                                 </div>
-                                <p className="font-body-sm text-body-sm text-brand-muted mb-4">Stunning coastal views</p>
-                                <div className="mt-auto">
-                                    <span className="font-bold text-brand-text text-lg">$320</span>
-                                    <span className="font-body-sm text-brand-muted">/ night</span>
-                                </div>
                             </div>
-                        </div>
-                        {/* Destination 2 */}
-                        <div onClick={handleActionClick} className="group bg-surface-container-lowest rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 overflow-hidden cursor-pointer flex flex-col">
-                            <div className="relative aspect-[4/3] overflow-hidden">
-                                <img alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO0zqpFS4icBxOJs9Nfo08pGQhcQlo7xC63qjfpWSL7zHqE3Y53EZgK4eyUDG1B3dbPVS9hLlWtXU9QNLyHaxehcuxZuqyoP-tUXnlQXl9N3fr7LzNeyNK6tFTHxGGsux12vbLwdKzBZ0TQTMFp-zhwoFFQSpL_4Yl_BJOGXEdLeNMj9gAHXnOj7Yx-vtJQ5IgMGIKDHHtMSpxrllPaf5Tipv8TiSN_Gldp4aETrZE2RaIAGp1Awl3m4QEnYIo_xemMF5KAa7A0w" />
-                                <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors">
-                                    <span className="material-symbols-outlined text-brand-text text-sm">favorite</span>
-                                </button>
-                            </div>
-                            <div className="p-4 flex flex-col flex-grow">
-                                <div className="flex justify-between items-start mb-1">
-                                    <h4 className="font-headline-md text-lg text-brand-text line-clamp-1">Kyoto, Japan</h4>
-                                    <div className="flex items-center gap-1 text-sm">
-                                        <span className="material-symbols-outlined text-brand-primary text-xs icon-fill">star</span>
-                                        <span className="font-bold text-brand-text">4.95</span>
-                                    </div>
-                                </div>
-                                <p className="font-body-sm text-body-sm text-brand-muted mb-4">Historical temples & gardens</p>
-                                <div className="mt-auto">
-                                    <span className="font-bold text-brand-text text-lg">$180</span>
-                                    <span className="font-body-sm text-brand-muted">/ night</span>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                     <button onClick={handleActionClick} className="mt-6 md:hidden w-full py-3 rounded-2xl border border-brand-text text-brand-text font-label-md hover:bg-brand-surface transition-colors">
                         View all destinations

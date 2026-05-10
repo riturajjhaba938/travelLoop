@@ -23,6 +23,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import SupportPage from './pages/SupportPage';
 import ContactUsPage from './pages/ContactUsPage';
+import LocationDetailPage from './pages/LocationDetailPage';
 
 const NO_LAYOUT_PATHS = ['/login', '/register', '/'];
 
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/location/:slug" element={<LocationDetailPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
             <Route path="/trips/new" element={<ProtectedRoute><CreateTripPage /></ProtectedRoute>} />
