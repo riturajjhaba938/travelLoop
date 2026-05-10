@@ -21,7 +21,7 @@ export default function Navbar() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <img
             src="/logo-vertical.png"
             alt="TravelLoop"
@@ -32,7 +32,7 @@ export default function Navbar() {
         {/* Nav Links — dot indicator under active */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
           {[
-            { to: '/', label: 'Explore', end: true },
+            { to: '/dashboard', label: 'Explore', end: true },
             { to: '/trips', label: 'My Trips' },
             { to: '/community', label: 'Community' },
           ].map(({ to, label, end }) => (

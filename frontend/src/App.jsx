@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -19,16 +20,16 @@ import CommunityPage from './pages/CommunityPage';
 import BudgetPage from './pages/BudgetPage';
 import SharedItineraryPage from './pages/SharedItineraryPage';
 
-const AUTH_PATHS = ['/login', '/register'];
+const NO_LAYOUT_PATHS = ['/login', '/register', '/'];
 
 function Shell({ children }) {
   const { pathname } = useLocation();
-  const isAuth = AUTH_PATHS.includes(pathname);
+  const hideLayout = NO_LAYOUT_PATHS.includes(pathname);
   return (
     <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh' }}>
-      {!isAuth && <Navbar />}
+      {!hideLayout && <Navbar />}
       <div style={{ flex: 1 }}>{children}</div>
-      {!isAuth && <Footer />}
+      {!hideLayout && <Footer />}
     </div>
   );
 }
@@ -39,9 +40,10 @@ export default function App() {
       <BrowserRouter>
         <Shell>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
             <Route path="/trips/new" element={<ProtectedRoute><CreateTripPage /></ProtectedRoute>} />
             <Route path="/trips/:id/build" element={<ProtectedRoute><BuildItineraryPage /></ProtectedRoute>} />

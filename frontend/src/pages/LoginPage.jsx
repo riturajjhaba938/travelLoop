@@ -30,7 +30,7 @@ export default function LoginPage() {
         const { user, token } = await login(values);
         loginCtx(user, token);
         toast.success('Welcome back!');
-        navigate('/');
+        navigate('/dashboard');
       } catch (err) {
         setApiError(err.message || 'Login failed');
       } finally {

@@ -32,7 +32,7 @@ export default function RegisterPage() {
         const { user, token } = await register(values);
         loginCtx(user, token);
         toast.success('Account created successfully!');
-        navigate('/');
+        navigate('/dashboard');
       } catch (err) {
         setApiError(err.message || 'Registration failed');
       } finally {

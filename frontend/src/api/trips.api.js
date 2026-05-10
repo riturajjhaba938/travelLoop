@@ -1,4 +1,5 @@
 import api from './axios';
+import { MOCK_FEATURED_TRIPS, delay } from '../mock/data';
 
 export const getTrips = async () => {
   const { data } = await api.get('/trips');
@@ -26,6 +27,16 @@ export const deleteTrip = async (id) => {
 };
 
 export const getFeaturedTrips = async () => {
-  const { data } = await api.get('/trips/community');
-  return data;
+  try {
+    const { data } = await api.get('/trips/community');
+    return data;
+  } catch (err) {
+    await delay(300);
+    return MOCK_FEATURED_TRIPS.map(t => ({
+      id: t.id,
+      name: t.name,
+      cover_photo: t.image,
+      place: "the world" // fallback place text
+    }));
+  }
 };
