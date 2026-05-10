@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import toast from 'react-hot-toast';
 import useTripStore from '../store/useTripStore';
-import { getExpenses, addExpense, deleteExpense, getBudgetBreakdown } from '../api/expenses.api';
+import { getExpenses, addExpense, deleteExpense, getBudgetBreakdown, getBudgetSummary } from '../api/expenses.api';
 import Loader from '../components/common/Loader';
 
 /* ── Category config ─────────────────────────────────────────── */
@@ -42,6 +42,7 @@ export default function BudgetPage() {
 
   const [expenses, setExpenses]     = useState([]);
   const [breakdown, setBreakdown]   = useState([]);   // { category, total } from server
+  const [summary, setSummary]       = useState({ total_planned: 0, total_spent: 0 });
   const [loadingExp, setLoadingExp] = useState(true);
   const [showForm, setShowForm]     = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -56,12 +57,14 @@ export default function BudgetPage() {
     if (!id) return;
     setLoadingExp(true);
     try {
-      const [expData, bkData] = await Promise.all([
+      const [expData, bkData, summaryData] = await Promise.all([
         getExpenses(id),
         getBudgetBreakdown(id),
+        getBudgetSummary(id),
       ]);
       setExpenses(expData);
       setBreakdown(bkData.by_category || []);
+      setSummary(summaryData || { total_planned: 0, total_spent: 0 });
     } catch (err) {
       toast.error('Failed to load expense data');
     } finally {
@@ -74,11 +77,15 @@ export default function BudgetPage() {
 
   /* ── Derived numbers ───────────────────────────────────────── */
   const currency     = trip?.currency || '$';
-  const totalBudget  = parseFloat(trip?.budget || 0);
-  const totalSpent   = expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+  const tripBudget = parseFloat(trip?.budget || 0);
+  const plannedFromSections = parseFloat(summary?.total_planned || 0);
+  const totalBudget = plannedFromSections > 0 ? plannedFromSections : tripBudget;
+  const totalSpent = parseFloat(summary?.total_spent || expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0));
   const remaining    = totalBudget - totalSpent;
   const overBudget   = totalSpent > totalBudget && totalBudget > 0;
-  const pct          = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+  const rawPct       = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  const pctForBar    = Math.min(100, Math.max(0, rawPct));
+  const pctLabel     = `${pctForBar.toFixed(1)}%`;
 
   // Trip duration in days
   const tripDays = (() => {
@@ -309,11 +316,11 @@ export default function BudgetPage() {
         <div style={{ background: '#fff', padding: 32, borderRadius: 'var(--r-2xl)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', marginBottom: 32 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-main)' }}>Overall Budget Used</span>
-            <span style={{ fontSize: 15, fontWeight: 700, color: overBudget ? '#DC2626' : 'var(--secondary)' }}>{pct}%</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: overBudget ? '#DC2626' : 'var(--secondary)' }}>{pctLabel}</span>
           </div>
           <div style={{ height: 14, background: 'var(--surface-high)', borderRadius: 'var(--r-full)', overflow: 'hidden', marginBottom: 10 }}>
             <div style={{
-              height: '100%', width: `${pct}%`, borderRadius: 'var(--r-full)',
+              height: '100%', width: `${pctForBar}%`, borderRadius: 'var(--r-full)',
               background: overBudget
                 ? 'linear-gradient(to right, #EF4444, #DC2626)'
                 : 'linear-gradient(to right, var(--primary), var(--secondary))',
