@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const expenseController = require('../controllers/expense.controller');
+const authMiddleware = require('../middleware/auth.middleware');
+
+router.use(authMiddleware);
+
+router.get('/:tripId/expenses', expenseController.getExpenses);
+router.post('/:tripId/expenses', expenseController.addExpense);
+
+module.exports = router;
