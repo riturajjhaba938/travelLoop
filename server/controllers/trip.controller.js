@@ -1,5 +1,7 @@
 const db = require('../config/db');
 
+const VALID_STATUSES = ['upcoming', 'ongoing', 'completed'];
+
 exports.getAllTrips = async (req, res, next) => {
   const { status } = req.query;
   try {
@@ -23,6 +25,9 @@ exports.getAllTrips = async (req, res, next) => {
     const params = [req.user.id];
 
     if (status) {
+      if (!VALID_STATUSES.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+      }
       query += ' AND t.status = $2';
       params.push(status);
     }
@@ -37,6 +42,11 @@ exports.getAllTrips = async (req, res, next) => {
 
 exports.createTrip = async (req, res, next) => {
   const { name, place, start_date, end_date, status, cover_photo, is_public } = req.body;
+  
+  if (status && !VALID_STATUSES.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
+
   try {
     const result = await db.query(
       'INSERT INTO trips (user_id, name, place, start_date, end_date, status, cover_photo, is_public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
@@ -65,13 +75,22 @@ exports.getTripById = async (req, res, next) => {
         FROM expenses 
         GROUP BY trip_id
       ) e ON t.id = e.trip_id
-      WHERE t.id = $1 AND (t.user_id = $2 OR t.is_public = true)
-    `, [req.params.id, req.user.id]);
+      WHERE t.id = $1
+    `, [req.params.id]);
 
-    if (result.rows.length === 0) {
+    const trip = result.rows[0];
+    if (!trip) {
       return res.status(404).json({ message: 'Trip not found' });
     }
-    res.json(result.rows[0]);
+
+    // Auth logic: allow if trip is public OR if logged in user is owner
+    if (!trip.is_public) {
+      if (!req.user || trip.user_id !== req.user.id) {
+        return res.status(403).json({ message: 'Access denied' });
+      }
+    }
+
+    res.json(trip);
   } catch (err) {
     next(err);
   }
@@ -79,9 +98,14 @@ exports.getTripById = async (req, res, next) => {
 
 exports.updateTrip = async (req, res, next) => {
   const { name, place, start_date, end_date, status, cover_photo, is_public } = req.body;
+  
+  if (status && !VALID_STATUSES.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
+
   try {
     const result = await db.query(
-      'UPDATE trips SET name = $1, place = $2, start_date = $3, end_date = $4, status = $5, cover_photo = $6, is_public = $7 WHERE id = $8 AND user_id = $9 RETURNING *',
+      'UPDATE trips SET name = COALESCE($1, name), place = COALESCE($2, place), start_date = COALESCE($3, start_date), end_date = COALESCE($4, end_date), status = COALESCE($5, status), cover_photo = COALESCE($6, cover_photo), is_public = COALESCE($7, is_public) WHERE id = $8 AND user_id = $9 RETURNING *',
       [name, place, start_date, end_date, status, cover_photo, is_public, req.params.id, req.user.id]
     );
     if (result.rows.length === 0) {
