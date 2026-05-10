@@ -29,14 +29,14 @@ app.use(express.json());
 // Global Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000, // Increased for 4+ team members
   message: { message: 'Too many requests, please try again later.' }
 });
 
 // Stricter Auth Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20, // stricter for login/register
+  max: 500, // Increased for generous testing
   message: { message: 'Too many auth attempts, please try again later.' }
 });
 
