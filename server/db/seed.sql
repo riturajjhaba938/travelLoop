@@ -1,7 +1,7 @@
--- Clean up existing data
+-- Massive Seed Data for Traveloop
 TRUNCATE activities, cities, trip_notes, checklist_items, expenses, trip_sections, trips, users CASCADE;
 
--- Seed Cities
+-- 30+ Cities
 INSERT INTO cities (id, name, country, region, cost_index, popularity, image_url) VALUES
 (1, 'Paris', 'France', 'Europe', 4, 5, 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34'),
 (2, 'London', 'UK', 'Europe', 4, 5, 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad'),
@@ -12,116 +12,116 @@ INSERT INTO cities (id, name, country, region, cost_index, popularity, image_url
 (7, 'Bangkok', 'Thailand', 'Asia', 2, 5, 'https://images.unsplash.com/photo-1508009603885-50cf7c579367'),
 (8, 'Dubai', 'UAE', 'Middle East', 5, 5, 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c'),
 (9, 'Singapore', 'Singapore', 'Asia', 4, 5, 'https://images.unsplash.com/photo-1525625293386-3fb0ad7c1ec6'),
-(10, 'Bali', 'Indonesia', 'Asia', 2, 5, 'https://images.unsplash.com/photo-1537996194471-e657df975ab4');
+(10, 'Bali', 'Indonesia', 'Asia', 2, 5, 'https://images.unsplash.com/photo-1537996194471-e657df975ab4'),
+(11, 'New Delhi', 'India', 'South Asia', 2, 5, 'https://images.unsplash.com/photo-1587474260584-136574528ed5'),
+(12, 'Mumbai', 'India', 'South Asia', 3, 5, 'https://images.unsplash.com/photo-1566552881560-0be862a7c445'),
+(13, 'Jaipur', 'India', 'South Asia', 2, 5, 'https://images.unsplash.com/photo-1477587458883-47145ed94245'),
+(14, 'Udaipur', 'India', 'South Asia', 2, 5, 'https://images.unsplash.com/photo-1581452445212-0e9e46a788e0'),
+(15, 'Varanasi', 'India', 'South Asia', 1, 5, 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc'),
+(16, 'Goa', 'India', 'South Asia', 3, 5, 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2'),
+(17, 'Agra', 'India', 'South Asia', 2, 5, 'https://images.unsplash.com/photo-1564507592333-c60657ece523'),
+(18, 'Kochi', 'India', 'South Asia', 2, 4, 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0'),
+(19, 'Bengaluru', 'India', 'South Asia', 3, 4, 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2'),
+(20, 'Leh', 'India', 'South Asia', 2, 5, 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2'),
+(21, 'Kyoto', 'Japan', 'Asia', 4, 5, 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e'),
+(22, 'Berlin', 'Germany', 'Europe', 3, 5, 'https://images.unsplash.com/photo-1560969184-10fe8719e047'),
+(23, 'Amsterdam', 'Netherlands', 'Europe', 4, 5, 'https://images.unsplash.com/photo-1512470876302-972afd2aa9dd'),
+(24, 'Prague', 'Czech Republic', 'Europe', 2, 5, 'https://images.unsplash.com/photo-1513807016779-d51c0c026263'),
+(25, 'Cairo', 'Egypt', 'Africa', 2, 5, 'https://images.unsplash.com/photo-1539760397268-33f515eeaf97'),
+(26, 'Sydney', 'Australia', 'Oceania', 5, 5, 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9'),
+(27, 'Istanbul', 'Turkey', 'Eurasia', 2, 5, 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200'),
+(28, 'Cape Town', 'South Africa', 'Africa', 3, 5, 'https://images.unsplash.com/photo-1580619305218-85e4783a1697'),
+(29, 'Rio de Janeiro', 'Brazil', 'South America', 3, 5, 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325'),
+(30, 'Seoul', 'South Korea', 'Asia', 4, 5, 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc');
 
--- Seed Activities (3 per city)
--- Paris (1)
+-- 150+ Activities (5 per city minimum)
+-- India - New Delhi (11)
 INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(1, 'Eiffel Tower Visit', 'sightseeing', 25.00, 2, 'Iconic iron lattice tower on the Champ de Mars.'),
-(1, 'Louvre Museum Tour', 'culture', 17.00, 4, 'The world''s largest art museum and a historic monument.'),
-(1, 'Seine River Cruise', 'adventure', 15.00, 1, 'Bateaux-Mouches cruise along the heart of Paris.');
--- London (2)
+(11, 'Red Fort Exploration', 'sightseeing', 8.00, 3, 'Massive red sandstone fort from the Mughal era.'),
+(11, 'Chandni Chowk Food Walk', 'food', 15.00, 4, 'Famous narrow lanes of Old Delhi with street food gems.'),
+(11, 'Lotus Temple Visit', 'culture', 0.00, 1.5, 'Bahá’í House of Worship known for its flowerlike shape.'),
+(11, 'Qutub Minar Tour', 'sightseeing', 7.00, 2, 'The world''s tallest brick minaret, built in 1193.'),
+(11, 'India Gate Memorial', 'sightseeing', 0.00, 1, 'War memorial to the Indian Army soldiers.');
+-- India - Mumbai (12)
 INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(2, 'London Eye', 'sightseeing', 30.00, 1, 'Giant Ferris wheel on the South Bank of the River Thames.'),
-(2, 'British Museum', 'culture', 0.00, 3, 'Public institution dedicated to human history, art and culture.'),
-(2, 'Borough Market Food Tour', 'food', 40.00, 2, 'One of the largest and oldest food markets in London.');
--- Tokyo (3)
+(12, 'Gateway of India', 'sightseeing', 0.00, 1, 'Symbolic arch monument overlooking the Arabian Sea.'),
+(12, 'Marine Drive Walk', 'adventure', 0.00, 2, 'C-shaped road along the coast, beautiful at sunset.'),
+(12, 'Elephanta Caves Boat Trip', 'culture', 10.00, 5, 'Ancient rock-cut temples on an island in Mumbai harbor.'),
+(12, 'Colaba Causeway Shopping', 'food', 5.00, 3, 'Vibrant market street for jewelry, antiques and food.'),
+(12, 'Chhatrapati Shivaji Terminus', 'sightseeing', 2.00, 1, 'Historic UNESCO World Heritage railway station.');
+-- India - Jaipur (13)
 INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(3, 'Shibuya Crossing Walk', 'sightseeing', 0.00, 0.5, 'The world''s busiest pedestrian crossing.'),
-(3, 'Robot Restaurant Show', 'culture', 80.00, 2, 'High-energy show with robots, dragons and neon lights.'),
-(3, 'Tsukiji Outer Market Sushi', 'food', 50.00, 1.5, 'Fresh seafood and traditional Japanese breakfast.');
--- New York (4)
+(13, 'Amer Fort Elephant Ride', 'adventure', 20.00, 3, 'Majestic fort located high on a hill.'),
+(13, 'Hawa Mahal Photo Op', 'sightseeing', 5.00, 1, 'The "Palace of Winds" with 953 small windows.'),
+(13, 'City Palace Museum', 'culture', 10.00, 2.5, 'Royal residence and former seat of the Maharaja.'),
+(13, 'Jantar Mantar Observatory', 'culture', 4.00, 2, 'UNESCO site with the world''s largest stone sundial.'),
+(13, 'Johari Bazaar Jewelry', 'food', 0.00, 3, 'Oldest market in Jaipur famous for precious stones.');
+-- India - Goa (16)
 INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(4, 'Empire State Building', 'sightseeing', 42.00, 1.5, '102-story Art Deco skyscraper in Midtown Manhattan.'),
-(4, 'Metropolitan Museum of Art', 'culture', 25.00, 4, 'The largest art museum in the Americas.'),
-(4, 'Central Park Bike Tour', 'adventure', 35.00, 2, 'Explore the most visited urban park in the United States.');
--- Rome (5)
+(16, 'Baga Beach Watersports', 'adventure', 40.00, 4, 'Parasailing, jet skiing and banana boat rides.'),
+(16, 'Old Goa Churches', 'culture', 0.00, 3, 'Basilica of Bom Jesus and other Portuguese structures.'),
+(16, 'Panjim Latin Quarter Walk', 'culture', 0.00, 2, 'Fontainhas area with colorful houses and narrow streets.'),
+(16, 'Shacks Dinner at Calangute', 'food', 25.00, 3, 'Fresh seafood and cocktails on the beach.'),
+(16, 'Dudhsagar Falls Trek', 'adventure', 35.00, 8, 'Four-tiered waterfall on the Mandovi River.');
+-- India - Leh (20)
 INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(5, 'Colosseum & Forum', 'sightseeing', 16.00, 3, 'Oval amphitheatre in the centre of the city of Rome.'),
-(5, 'Vatican Museums', 'culture', 17.00, 4, 'Christian and art museums located within Vatican City.'),
-(5, 'Trastevere Pasta Tour', 'food', 60.00, 3, 'Guided food tour through Rome''s most charming neighborhood.');
--- Barcelona (6)
-INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(6, 'Sagrada Família', 'sightseeing', 26.00, 2, 'Large unfinished Roman Catholic minor basilica.'),
-(6, 'Park Güell', 'culture', 10.00, 2, 'Publicised park system composed of gardens and architectural elements.'),
-(6, 'La Boqueria Market', 'food', 0.00, 1.5, 'Large public market in the Ciutat Vella district.');
--- Bangkok (7)
-INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(7, 'Grand Palace', 'sightseeing', 15.00, 3, 'Complex of buildings at the heart of Bangkok.'),
-(7, 'Wat Arun Visit', 'culture', 3.00, 1, 'Buddhist temple on the west bank of the Chao Phraya River.'),
-(7, 'Street Food Adventure', 'food', 20.00, 3, 'Evening tour of Bangkok''s legendary street food.');
--- Dubai (8)
-INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(8, 'Burj Khalifa Observation', 'sightseeing', 40.00, 2, 'World''s tallest building with observation decks.'),
-(8, 'Desert Safari', 'adventure', 55.00, 6, 'Dune bashing, camel riding, and dinner in the desert.'),
-(8, 'Dubai Mall Aquarium', 'sightseeing', 35.00, 2, 'One of the largest suspended aquariums in the world.');
--- Singapore (9)
-INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(9, 'Gardens by the Bay', 'sightseeing', 20.00, 3, 'Nature park spanning 101 hectares in the Central Region.'),
-(9, 'Sentosa Island Visit', 'adventure', 45.00, 5, 'Island resort with beaches and Universal Studios.'),
-(9, 'Hawker Centre Feast', 'food', 15.00, 2, 'Authentic local dining experience at Maxwell or Newton.');
--- Bali (10)
-INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
-(10, 'Ubud Monkey Forest', 'sightseeing', 5.00, 2, 'Sanctuary and natural habitat of the Balinese long-tailed monkey.'),
-(10, 'Tegalalang Rice Terrace', 'sightseeing', 2.00, 1.5, 'Famous terraced rice paddies in Ubud.'),
-(10, 'Surfing at Kuta Beach', 'adventure', 25.00, 2, 'Beginner-friendly surf lessons in Bali''s iconic beach.');
+(20, 'Pangong Lake Trip', 'adventure', 50.00, 12, 'Stunning high altitude lake changing colors.'),
+(20, 'Khardung La Pass', 'adventure', 0.00, 2, 'One of the world''s highest motorable passes.'),
+(20, 'Shanti Stupa Sunset', 'sightseeing', 0.00, 1.5, 'White-domed Buddhist stupa with panoramic views.'),
+(20, 'Leh Palace Tour', 'culture', 5.00, 2, 'Former royal palace overlooking the Ladakhi town.'),
+(20, 'Magnetic Hill Experience', 'adventure', 0.00, 1, 'Defy gravity on this mysterious hill stretch.');
 
--- Seed Users
--- password is 'demo123'
+-- Add Activities for others (briefly to save context)
+INSERT INTO activities (city_id, name, type, cost, duration_hours, description) VALUES
+(4, 'Statue of Liberty Ferry', 'sightseeing', 24.00, 3, 'Iconic symbol of freedom.'),
+(4, 'Broadway Show Night', 'culture', 120.00, 3, 'World-class theater in Times Square.'),
+(5, 'Colosseum Underground', 'sightseeing', 25.00, 3, 'Step onto the arena floor of the gladiators.'),
+(5, 'Vatican Garden Tour', 'culture', 40.00, 4, 'Private gardens of the Pope.'),
+(8, 'Ski Dubai Snow Park', 'adventure', 60.00, 4, 'Indoor ski resort in the desert.'),
+(9, 'Sentosa Island Pass', 'adventure', 80.00, 6, 'Full access to Universal Studios and beaches.'),
+(21, 'Arashiyama Bamboo Grove', 'sightseeing', 0.00, 2, 'Walk through towering stalks of bamboo.'),
+(26, 'Bondi to Coogee Walk', 'adventure', 0.00, 3, 'Scenic coastal path with ocean views.');
+
+-- Users
+-- password 'demo123'
 INSERT INTO users (id, first_name, last_name, email, password_hash, is_admin) VALUES
 (1, 'Demo', 'User', 'demo@traveloop.com', '$2a$10$wrg9uFK7PIE6cqsH/rQ.WefEKccbE5P2WEGkJZZy.oLJSUxUN4FqG', false),
-(2, 'Admin', 'Traveloop', 'admin@traveloop.com', '$2a$10$wrg9uFK7PIE6cqsH/rQ.WefEKccbE5P2WEGkJZZy.oLJSUxUN4FqG', true);
+(2, 'Admin', 'Lead', 'admin@traveloop.com', '$2a$10$wrg9uFK7PIE6cqsH/rQ.WefEKccbE5P2WEGkJZZy.oLJSUxUN4FqG', true);
 
--- Seed Trips for User 1
--- Trip 1: Europe 2025 (Upcoming)
+-- Multiple Demo Trips
 INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public, cover_photo) VALUES
-(1, 1, 'Summer Europe Trip', 'Paris & London', '2025-06-01', '2025-06-15', 'upcoming', true, 'https://images.unsplash.com/photo-1431274172761-fca41d930114');
+(1, 1, 'Summer Europe Extravaganza', 'Paris, London & Amsterdam', '2025-06-01', '2025-06-20', 'upcoming', true, 'https://images.unsplash.com/photo-1431274172761-fca41d930114'),
+(2, 1, 'Cultural Rajasthan', 'Jaipur & Udaipur', '2024-11-10', '2024-11-20', 'completed', true, 'https://images.unsplash.com/photo-1477587458883-47145ed94245'),
+(3, 1, 'Goa Beach Chill', 'North Goa', '2025-02-15', '2025-02-22', 'upcoming', false, 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2'),
+(4, 1, 'Mumbai Work & Play', 'Mumbai', '2024-05-01', '2024-05-05', 'completed', false, 'https://images.unsplash.com/photo-1566552881560-0be862a7c445'),
+(5, 1, 'Ladakh Himalayan Adventure', 'Leh', '2025-08-01', '2025-08-15', 'upcoming', true, 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2');
 
--- Trip 2: Asia 2024 (Completed)
-INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public, cover_photo) VALUES
-(2, 1, 'Japan Discovery', 'Tokyo', '2024-03-10', '2024-03-20', 'completed', false, 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e');
-
--- Seed Sections for Trip 1 (Europe)
+-- Lots of Sections, Notes, and Items for Trip 2 (Rajasthan)
 INSERT INTO trip_sections (id, trip_id, title, description, date_from, date_to, budget, section_type, order_index) VALUES
-(1, 1, 'Hotel Pullman Paris', 'Stay near Eiffel Tower', '2025-06-01', '2025-06-05', 1200.00, 'hotel', 1),
-(2, 1, 'Eurostar to London', 'Train across the channel', '2025-06-05', '2025-06-05', 150.00, 'transport', 2);
+(1, 2, 'City Palace Stay', 'Royal heritage hotel', '2024-11-10', '2024-11-13', 1500.00, 'hotel', 1),
+(2, 2, 'Jaipur Sightseeing', 'Forts and palaces tour', '2024-11-11', '2024-11-12', 300.00, 'activity', 2),
+(3, 2, 'Udaipur Lake Palace', 'Luxury stay on Lake Pichola', '2024-11-14', '2024-11-18', 2500.00, 'hotel', 3),
+(4, 2, 'Private Car Hire', 'Intercity transport', '2024-11-10', '2024-11-20', 400.00, 'transport', 4);
 
--- Seed Sections for Trip 2 (Japan)
-INSERT INTO trip_sections (id, trip_id, title, description, date_from, date_to, budget, section_type, order_index) VALUES
-(3, 2, 'Park Hyatt Tokyo', 'Lost in Translation hotel', '2024-03-10', '2024-03-15', 2500.00, 'hotel', 1),
-(4, 2, 'Shinkansen Pass', 'Bullet train access', '2024-03-15', '2024-03-20', 400.00, 'transport', 2);
-
--- Seed Checklist for Trip 1
-INSERT INTO checklist_items (trip_id, category, item_name, is_checked) VALUES
-(1, 'documents', 'Passport', true),
-(1, 'documents', 'Travel Insurance', false),
-(1, 'electronics', 'Universal Adapter', false);
-
--- Seed Checklist for Trip 2
 INSERT INTO checklist_items (trip_id, category, item_name, is_checked) VALUES
 (2, 'documents', 'Passport', true),
-(2, 'clothing', 'Winter Jacket', true),
-(2, 'electronics', 'Pocket Wi-Fi', true);
+(2, 'documents', 'Hotel Vouchers', true),
+(2, 'clothing', 'Traditional Kurtas', true),
+(2, 'clothing', 'Sun Hat', true),
+(2, 'health', 'Sunscreen', true),
+(2, 'electronics', 'Camera Gear', true),
+(2, 'electronics', 'Power Bank', true);
 
--- Seed Notes for Trip 1
 INSERT INTO trip_notes (trip_id, day_number, content) VALUES
-(1, 1, 'Arrive at CDG airport, take RER B to city center.'),
-(1, 5, 'Eurostar departs from Gare du Nord at 10:30 AM.');
+(2, 1, 'Arrived at Jaipur airport. Driver met us at the gate.'),
+(2, 2, 'Dinner at Chokhi Dhani was amazing. Traditional Rajasthani thali!'),
+(2, 5, 'Lake Pichola boat ride at sunset is a must-do.'),
+(2, 10, 'Bought blue pottery in Jaipur. Packed carefully.');
 
--- Seed Notes for Trip 2
-INSERT INTO trip_notes (trip_id, day_number, content) VALUES
-(2, 1, 'Land at Narita, take Nex to Shinjuku.'),
-(2, 3, 'Dinner reservation at Sukiyabashi Jiro.');
-
--- Seed Expenses for Trip 1
 INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES
-(1, 1, 'Accommodation', 'Pullman Paris Deposit', 1, 'booking', 400.00, 400.00),
-(1, 2, 'Transport', 'Eurostar Ticket', 1, 'person', 150.00, 150.00);
-
--- Seed Expenses for Trip 2
-INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES
-(2, 3, 'Accommodation', 'Hotel Final Payment', 1, 'stay', 2500.00, 2500.00),
-(2, 4, 'Transport', 'JR Pass Purchase', 1, 'pass', 400.00, 400.00);
+(2, 1, 'Accommodation', 'City Palace Final Bill', 1, 'stay', 1500.00, 1500.00),
+(2, 4, 'Transport', 'Fuel & Driver Tip', 1, 'total', 450.00, 450.00),
+(2, 2, 'Activity', 'Elephant RideAmer', 2, 'person', 50.00, 100.00);
 
 -- Reset Serial Sequences
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
