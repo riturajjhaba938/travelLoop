@@ -19,17 +19,27 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors()); // In production, configure origin
+app.use(cors());
 app.use(express.json());
 
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+// Global Rate Limiting
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { message: 'Too many requests, please try again later.' }
 });
-app.use('/api/', limiter);
 
-// Routes - Fixed Mounting to prevent doubled segments
+// Stricter Auth Rate Limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20, // stricter for login/register
+  message: { message: 'Too many auth attempts, please try again later.' }
+});
+
+app.use('/api/', globalLimiter);
+app.use('/api/auth/', authLimiter);
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/sections', sectionRoutes);
@@ -43,15 +53,7 @@ app.use('/api/users', userRoutes);
 // Error Handler
 app.use(errorMiddleware);
 
-const db = require('./config/db');
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  try {
-    const res = await db.query('SELECT NOW()');
-    console.log('Database connected successfully:', res.rows[0].now);
-  } catch (err) {
-    console.error('Database connection failed:', err.message);
-  }
 });

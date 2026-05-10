@@ -25,7 +25,7 @@ exports.getStats = async (req, res, next) => {
 exports.getAllUsers = async (req, res, next) => {
   try {
     const result = await db.query(
-      'SELECT id, first_name, last_name, email, city, country, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, first_name, last_name, email, city, country, is_admin, created_at FROM users ORDER BY created_at DESC'
     );
     res.json(result.rows);
   } catch (err) {
