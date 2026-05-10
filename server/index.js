@@ -43,7 +43,15 @@ app.use('/api/users', userRoutes);
 // Error Handler
 app.use(errorMiddleware);
 
+const db = require('./config/db');
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
+  try {
+    const res = await db.query('SELECT NOW()');
+    console.log('Database connected successfully:', res.rows[0].now);
+  } catch (err) {
+    console.error('Database connection failed:', err.message);
+  }
 });
