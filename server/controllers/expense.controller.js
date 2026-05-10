@@ -69,3 +69,41 @@ exports.getBudgetBreakdown = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getInvoice = async (req, res, next) => {
+  const { tripId } = req.params;
+  try {
+    const tripResult = await db.query(
+      'SELECT t.*, u.first_name, u.last_name, u.email FROM trips t JOIN users u ON t.user_id = u.id WHERE t.id = $1',
+      [tripId]
+    );
+    
+    if (tripResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const expensesResult = await db.query(
+      'SELECT e.*, ts.title as section_name FROM expenses e LEFT JOIN trip_sections ts ON e.section_id = ts.id WHERE e.trip_id = $1 ORDER BY e.created_at ASC',
+      [tripId]
+    );
+
+    const summaryResult = await db.query(
+      'SELECT (SELECT SUM(budget) FROM trip_sections WHERE trip_id = $1) as total_budget, SUM(amount) as total_spent FROM expenses WHERE trip_id = $1',
+      [tripId]
+    );
+
+    const summary = summaryResult.rows[0];
+
+    res.json({
+      trip: tripResult.rows[0],
+      expenses: expensesResult.rows,
+      totals: {
+        planned: summary.total_budget || 0,
+        spent: summary.total_spent || 0,
+        balance: (summary.total_budget || 0) - (summary.total_spent || 0)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
