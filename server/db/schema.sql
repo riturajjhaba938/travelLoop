@@ -12,7 +12,8 @@ CREATE TABLE users (
     country VARCHAR(100),
     profile_pic TEXT,
     is_admin BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Trips Table
@@ -26,7 +27,8 @@ CREATE TABLE trips (
     status VARCHAR(20) DEFAULT 'upcoming',
     is_public BOOLEAN DEFAULT false,
     cover_photo TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Trip Sections Table
@@ -39,7 +41,9 @@ CREATE TABLE trip_sections (
     date_to DATE,
     budget NUMERIC(10,2),
     section_type VARCHAR(50),
-    order_index INTEGER
+    order_index INTEGER,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Expenses Table
@@ -53,7 +57,8 @@ CREATE TABLE expenses (
     unit VARCHAR(50),
     unit_cost NUMERIC(10,2),
     amount NUMERIC(10,2),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Checklist Items Table
@@ -63,7 +68,8 @@ CREATE TABLE checklist_items (
     category VARCHAR(50),
     item_name VARCHAR(255),
     is_checked BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Trip Notes Table
@@ -72,7 +78,8 @@ CREATE TABLE trip_notes (
     trip_id INTEGER REFERENCES trips(id) ON DELETE CASCADE,
     day_number INTEGER,
     content TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Cities Table

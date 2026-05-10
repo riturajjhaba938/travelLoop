@@ -5,6 +5,10 @@ const generateToken = require('../utils/generateToken');
 exports.register = async (req, res, next) => {
   const { first_name, last_name, email, password, phone, city, country } = req.body;
 
+  if (!email || !password || !first_name) {
+    return res.status(400).json({ message: 'Email, password, and first name are required' });
+  }
+
   try {
     const userExists = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     if (userExists.rows.length > 0) {
@@ -32,6 +36,10 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
   try {
     const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
@@ -41,6 +49,7 @@ exports.login = async (req, res, next) => {
         id: user.id,
         email: user.email,
         first_name: user.first_name,
+        is_admin: user.is_admin,
         token: generateToken(user.id),
       });
     } else {
@@ -51,10 +60,11 @@ exports.login = async (req, res, next) => {
   }
 };
 
+// Console logs or alias for users/me
 exports.getMe = async (req, res, next) => {
   try {
     const result = await db.query(
-      'SELECT id, first_name, last_name, email, phone, city, country, profile_pic FROM users WHERE id = $1',
+      'SELECT id, first_name, last_name, email, phone, city, country, profile_pic, is_admin FROM users WHERE id = $1',
       [req.user.id]
     );
     res.json(result.rows[0]);

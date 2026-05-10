@@ -6,9 +6,9 @@ const authMiddleware = require('../middleware/auth.middleware');
 router.use(authMiddleware);
 
 // Base: /api/notes
-router.get('/:tripId', noteController.getNotes);
-router.post('/:tripId', noteController.addNote);
-router.put('/:id', noteController.updateNote);
-router.delete('/:id', noteController.deleteNote);
+router.get('/trip/:tripId', noteController.getNotes);
+router.post('/trip/:tripId', noteController.addNote);
+router.put('/item/:id', noteController.updateNote);
+router.delete('/item/:id', noteController.deleteNote);
 
 module.exports = router;
