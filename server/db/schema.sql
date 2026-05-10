@@ -1,11 +1,4 @@
-DROP TABLE IF EXISTS activities CASCADE;
-DROP TABLE IF EXISTS cities CASCADE;
-DROP TABLE IF EXISTS trip_notes CASCADE;
-DROP TABLE IF EXISTS checklist_items CASCADE;
-DROP TABLE IF EXISTS expenses CASCADE;
-DROP TABLE IF EXISTS trip_sections CASCADE;
-DROP TABLE IF EXISTS trips CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS activities, cities, trip_notes, checklist_items, expenses, trip_sections, trips, users CASCADE;
 
 -- Users Table
 CREATE TABLE users (
