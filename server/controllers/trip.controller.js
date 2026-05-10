@@ -1,8 +1,18 @@
 const db = require('../config/db');
 
 exports.getAllTrips = async (req, res, next) => {
+  const { status } = req.query;
   try {
-    const result = await db.query('SELECT * FROM trips WHERE user_id = $1 ORDER BY created_at DESC', [req.user.id]);
+    let query = 'SELECT * FROM trips WHERE user_id = $1';
+    const params = [req.user.id];
+
+    if (status) {
+      query += ' AND status = $2';
+      params.push(status);
+    }
+
+    query += ' ORDER BY created_at DESC';
+    const result = await db.query(query, params);
     res.json(result.rows);
   } catch (err) {
     next(err);
@@ -10,11 +20,11 @@ exports.getAllTrips = async (req, res, next) => {
 };
 
 exports.createTrip = async (req, res, next) => {
-  const { name, place, start_date, end_date, status, cover_photo } = req.body;
+  const { name, place, start_date, end_date, status, cover_photo, is_public } = req.body;
   try {
     const result = await db.query(
-      'INSERT INTO trips (user_id, name, place, start_date, end_date, status, cover_photo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [req.user.id, name, place, start_date, end_date, status || 'upcoming', cover_photo]
+      'INSERT INTO trips (user_id, name, place, start_date, end_date, status, cover_photo, is_public) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [req.user.id, name, place, start_date, end_date, status || 'upcoming', cover_photo, is_public || false]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -24,7 +34,7 @@ exports.createTrip = async (req, res, next) => {
 
 exports.getTripById = async (req, res, next) => {
   try {
-    const result = await db.query('SELECT * FROM trips WHERE id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+    const result = await db.query('SELECT * FROM trips WHERE id = $1 AND (user_id = $2 OR is_public = true)', [req.params.id, req.user.id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Trip not found' });
     }
@@ -57,6 +67,17 @@ exports.deleteTrip = async (req, res, next) => {
       return res.status(404).json({ message: 'Trip not found' });
     }
     res.json({ message: 'Trip deleted' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getPublicTrips = async (req, res, next) => {
+  try {
+    const result = await db.query(
+      'SELECT t.*, u.first_name, u.last_name FROM trips t JOIN users u ON t.user_id = u.id WHERE t.is_public = true ORDER BY t.created_at DESC'
+    );
+    res.json(result.rows);
   } catch (err) {
     next(err);
   }

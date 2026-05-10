@@ -3,6 +3,10 @@ const router = express.Router();
 const tripController = require('../controllers/trip.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
+// Public route
+router.get('/community', tripController.getPublicTrips);
+
+// Protected routes
 router.use(authMiddleware);
 
 router.get('/', tripController.getAllTrips);

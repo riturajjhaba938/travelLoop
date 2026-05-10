@@ -48,3 +48,24 @@ exports.getBudgetSummary = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getBudgetBreakdown = async (req, res, next) => {
+  const { tripId } = req.params;
+  try {
+    const categoryBreakdown = await db.query(
+      'SELECT category, SUM(amount) as total FROM expenses WHERE trip_id = $1 GROUP BY category',
+      [tripId]
+    );
+    const sectionBreakdown = await db.query(
+      'SELECT ts.title, SUM(e.amount) as total FROM expenses e JOIN trip_sections ts ON e.section_id = ts.id WHERE e.trip_id = $1 GROUP BY ts.title',
+      [tripId]
+    );
+    
+    res.json({
+      by_category: categoryBreakdown.rows,
+      by_section: sectionBreakdown.rows
+    });
+  } catch (err) {
+    next(err);
+  }
+};
