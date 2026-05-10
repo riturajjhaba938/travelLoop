@@ -1,4 +1,4 @@
--- Clear existing data
+-- Clean up existing data
 TRUNCATE activities, cities, trip_notes, checklist_items, expenses, trip_sections, trips, users CASCADE;
 
 -- Seed Cities
