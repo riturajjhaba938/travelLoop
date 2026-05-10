@@ -1,46 +1,62 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Navbar from './components/common/Navbar'
-import ProtectedRoute from './components/common/ProtectedRoute'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import MyTripsPage from './pages/MyTripsPage';
+import CreateTripPage from './pages/CreateTripPage';
+import BuildItineraryPage from './pages/BuildItineraryPage';
+import ItineraryViewPage from './pages/ItineraryViewPage';
+import SearchPage from './pages/SearchPage';
+import ProfilePage from './pages/ProfilePage';
+import ChecklistPage from './pages/ChecklistPage';
+import NotesPage from './pages/NotesPage';
+import CommunityPage from './pages/CommunityPage';
 
-// Pages
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import DashboardPage from './pages/DashboardPage'
-import MyTripsPage from './pages/MyTripsPage'
-import CreateTripPage from './pages/CreateTripPage'
-import BuildItineraryPage from './pages/BuildItineraryPage'
-import ItineraryViewPage from './pages/ItineraryViewPage'
-import SearchPage from './pages/SearchPage'
-import ProfilePage from './pages/ProfilePage'
-import ChecklistPage from './pages/ChecklistPage'
-import NotesPage from './pages/NotesPage'
-import CommunityPage from './pages/CommunityPage'
-import AdminPage from './pages/AdminPage'
+const AUTH_PATHS = ['/login', '/register'];
 
-function App() {
+function Shell({ children }) {
+  const { pathname } = useLocation();
+  const isAuth = AUTH_PATHS.includes(pathname);
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/my-trips" element={<MyTripsPage />} />
-          <Route path="/create-trip" element={<CreateTripPage />} />
-          <Route path="/build-itinerary/:id" element={<BuildItineraryPage />} />
-          <Route path="/itinerary/:id" element={<ItineraryViewPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/checklist/:id" element={<ChecklistPage />} />
-          <Route path="/notes/:id" element={<NotesPage />} />
-          <Route path="/community" element={<CommunityPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-        </Route>
-      </Routes>
-    </Router>
-  )
+    <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh' }}>
+      {!isAuth && <Navbar />}
+      <div style={{ flex: 1 }}>{children}</div>
+      {!isAuth && <Footer />}
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Shell>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
+            <Route path="/trips/new" element={<ProtectedRoute><CreateTripPage /></ProtectedRoute>} />
+            <Route path="/trips/:id/build" element={<ProtectedRoute><BuildItineraryPage /></ProtectedRoute>} />
+            <Route path="/trips/:id" element={<ProtectedRoute><ItineraryViewPage /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/checklist" element={<ProtectedRoute><ChecklistPage /></ProtectedRoute>} />
+            <Route path="/notes" element={<ProtectedRoute><NotesPage /></ProtectedRoute>} />
+            <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Shell>
+        <Toaster position="top-right" toastOptions={{
+          style: { fontFamily:'Be Vietnam Pro', borderRadius:'8px', fontSize:'14px' },
+          success: { iconTheme: { primary:'#006a62', secondary:'#fff' } },
+        }} />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
