@@ -16,6 +16,8 @@ import ProfilePage from './pages/ProfilePage';
 import ChecklistPage from './pages/ChecklistPage';
 import NotesPage from './pages/NotesPage';
 import CommunityPage from './pages/CommunityPage';
+import BudgetPage from './pages/BudgetPage';
+import SharedItineraryPage from './pages/SharedItineraryPage';
 
 const AUTH_PATHS = ['/login', '/register'];
 
@@ -49,6 +51,8 @@ export default function App() {
             <Route path="/checklist" element={<ProtectedRoute><ChecklistPage /></ProtectedRoute>} />
             <Route path="/notes" element={<ProtectedRoute><NotesPage /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
+            <Route path="/budget" element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />
+            <Route path="/share/:id" element={<SharedItineraryPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Shell>
