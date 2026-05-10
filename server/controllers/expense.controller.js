@@ -18,11 +18,15 @@ exports.addExpense = async (req, res, next) => {
   const { tripId } = req.params;
   const { section_id, category, description, qty, unit, unit_cost } = req.body;
   
-  if (isNaN(qty) || isNaN(unit_cost)) {
-    return res.status(400).json({ message: 'Quantity and unit cost must be numbers' });
+  // Strict validation for numbers
+  const q = Number(qty);
+  const cost = Number(unit_cost);
+  
+  if (qty === null || unit_cost === null || isNaN(q) || isNaN(cost)) {
+    return res.status(400).json({ message: 'Quantity and unit cost must be valid numbers' });
   }
   
-  const amount = qty * unit_cost;
+  const amount = q * cost;
 
   try {
     if (!(await checkTripOwnership(tripId, req.user.id))) {
@@ -30,7 +34,7 @@ exports.addExpense = async (req, res, next) => {
     }
     const result = await db.query(
       'INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [tripId, section_id, category, description, qty, unit, unit_cost, amount]
+      [tripId, section_id, category, description, q, unit, cost, amount]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
