@@ -72,17 +72,22 @@ INSERT INTO users (id, first_name, last_name, email, password_hash) VALUES
 
 -- Seed Trips for User 1
 -- Trip 1: Europe 2025 (Upcoming)
-INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public) VALUES
-(1, 1, 'Summer Europe Trip', 'Paris & London', '2025-06-01', '2025-06-15', 'upcoming', true);
+INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public, cover_photo) VALUES
+(1, 1, 'Summer Europe Trip', 'Paris & London', '2025-06-01', '2025-06-15', 'upcoming', true, 'https://images.unsplash.com/photo-1431274172761-fca41d930114');
 
 -- Trip 2: Asia 2024 (Completed)
-INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public) VALUES
-(2, 1, 'Japan Discovery', 'Tokyo', '2024-03-10', '2024-03-20', 'completed', false);
+INSERT INTO trips (id, user_id, name, place, start_date, end_date, status, is_public, cover_photo) VALUES
+(2, 1, 'Japan Discovery', 'Tokyo', '2024-03-10', '2024-03-20', 'completed', false, 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e');
 
--- Seed Sections for Trip 1
+-- Seed Sections for Trip 1 (Europe)
 INSERT INTO trip_sections (id, trip_id, title, description, date_from, date_to, budget, section_type, order_index) VALUES
 (1, 1, 'Hotel Pullman Paris', 'Stay near Eiffel Tower', '2025-06-01', '2025-06-05', 1200.00, 'hotel', 1),
 (2, 1, 'Eurostar to London', 'Train across the channel', '2025-06-05', '2025-06-05', 150.00, 'transport', 2);
+
+-- Seed Sections for Trip 2 (Japan)
+INSERT INTO trip_sections (id, trip_id, title, description, date_from, date_to, budget, section_type, order_index) VALUES
+(3, 2, 'Park Hyatt Tokyo', 'Lost in Translation hotel', '2024-03-10', '2024-03-15', 2500.00, 'hotel', 1),
+(4, 2, 'Shinkansen Pass', 'Bullet train access', '2024-03-15', '2024-03-20', 400.00, 'transport', 2);
 
 -- Seed Checklist for Trip 1
 INSERT INTO checklist_items (trip_id, category, item_name, is_checked) VALUES
@@ -90,15 +95,31 @@ INSERT INTO checklist_items (trip_id, category, item_name, is_checked) VALUES
 (1, 'documents', 'Travel Insurance', false),
 (1, 'electronics', 'Universal Adapter', false);
 
+-- Seed Checklist for Trip 2
+INSERT INTO checklist_items (trip_id, category, item_name, is_checked) VALUES
+(2, 'documents', 'Passport', true),
+(2, 'clothing', 'Winter Jacket', true),
+(2, 'electronics', 'Pocket Wi-Fi', true);
+
 -- Seed Notes for Trip 1
 INSERT INTO trip_notes (trip_id, day_number, content) VALUES
 (1, 1, 'Arrive at CDG airport, take RER B to city center.'),
 (1, 5, 'Eurostar departs from Gare du Nord at 10:30 AM.');
 
+-- Seed Notes for Trip 2
+INSERT INTO trip_notes (trip_id, day_number, content) VALUES
+(2, 1, 'Land at Narita, take Nex to Shinjuku.'),
+(2, 3, 'Dinner reservation at Sukiyabashi Jiro.');
+
 -- Seed Expenses for Trip 1
 INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES
 (1, 1, 'Accommodation', 'Pullman Paris Deposit', 1, 'booking', 400.00, 400.00),
 (1, 2, 'Transport', 'Eurostar Ticket', 1, 'person', 150.00, 150.00);
+
+-- Seed Expenses for Trip 2
+INSERT INTO expenses (trip_id, section_id, category, description, qty, unit, unit_cost, amount) VALUES
+(2, 3, 'Accommodation', 'Hotel Final Payment', 1, 'stay', 2500.00, 2500.00),
+(2, 4, 'Transport', 'JR Pass Purchase', 1, 'pass', 400.00, 400.00);
 
 -- Reset Serial Sequences
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));

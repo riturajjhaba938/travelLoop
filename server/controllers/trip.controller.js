@@ -3,15 +3,31 @@ const db = require('../config/db');
 exports.getAllTrips = async (req, res, next) => {
   const { status } = req.query;
   try {
-    let query = 'SELECT * FROM trips WHERE user_id = $1';
+    let query = `
+      SELECT t.*, 
+        COALESCE(s.total_budget, 0) as total_budget, 
+        COALESCE(e.total_spent, 0) as total_spent 
+      FROM trips t
+      LEFT JOIN (
+        SELECT trip_id, SUM(budget) as total_budget 
+        FROM trip_sections 
+        GROUP BY trip_id
+      ) s ON t.id = s.trip_id
+      LEFT JOIN (
+        SELECT trip_id, SUM(amount) as total_spent 
+        FROM expenses 
+        GROUP BY trip_id
+      ) e ON t.id = e.trip_id
+      WHERE t.user_id = $1
+    `;
     const params = [req.user.id];
 
     if (status) {
-      query += ' AND status = $2';
+      query += ' AND t.status = $2';
       params.push(status);
     }
 
-    query += ' ORDER BY created_at DESC';
+    query += ' ORDER BY t.created_at DESC';
     const result = await db.query(query, params);
     res.json(result.rows);
   } catch (err) {
@@ -34,7 +50,24 @@ exports.createTrip = async (req, res, next) => {
 
 exports.getTripById = async (req, res, next) => {
   try {
-    const result = await db.query('SELECT * FROM trips WHERE id = $1 AND (user_id = $2 OR is_public = true)', [req.params.id, req.user.id]);
+    const result = await db.query(`
+      SELECT t.*, 
+        COALESCE(s.total_budget, 0) as total_budget, 
+        COALESCE(e.total_spent, 0) as total_spent 
+      FROM trips t
+      LEFT JOIN (
+        SELECT trip_id, SUM(budget) as total_budget 
+        FROM trip_sections 
+        GROUP BY trip_id
+      ) s ON t.id = s.trip_id
+      LEFT JOIN (
+        SELECT trip_id, SUM(amount) as total_spent 
+        FROM expenses 
+        GROUP BY trip_id
+      ) e ON t.id = e.trip_id
+      WHERE t.id = $1 AND (t.user_id = $2 OR t.is_public = true)
+    `, [req.params.id, req.user.id]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Trip not found' });
     }
